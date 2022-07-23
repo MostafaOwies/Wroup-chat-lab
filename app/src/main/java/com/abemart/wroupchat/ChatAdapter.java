@@ -40,41 +40,16 @@ public class ChatAdapter extends ArrayAdapter<MessageWrapper> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         MessageWrapper message = getItem(position);
 
-
         try {
-            boolean isCurrentDeviceMessage = message.getWroupDevice().equals(currentDevice);
-            if (isCurrentDeviceMessage) {
-                ChatAdapterOwnerHolder chatAdapterOwnerHolder;
-                if (convertView == null) {
-                    LayoutInflater inflater = LayoutInflater.from(getContext());
-                    convertView = inflater.inflate(R.layout.adapter_chat_owner, parent, false);
+            ChatAdapterOwnerHolder chatAdapterOwnerHolder;
+            LayoutInflater inflater = LayoutInflater.from(getContext());
+            convertView = inflater.inflate(R.layout.adapter_chat_owner, parent, false);
+            chatAdapterOwnerHolder = new ChatAdapterOwnerHolder();
+            chatAdapterOwnerHolder.txtViewMessage = (TextView) convertView.findViewById(R.id.text_view_message_owner);
+            convertView.setTag(chatAdapterOwnerHolder);
+            chatAdapterOwnerHolder.txtViewMessage.setText(message.getMessage());
 
-                    chatAdapterOwnerHolder = new ChatAdapterOwnerHolder();
-                    chatAdapterOwnerHolder.txtViewMessage = (TextView) convertView.findViewById(R.id.text_view_message_owner);
-                    convertView.setTag(chatAdapterOwnerHolder);
-                } else {
-                    chatAdapterOwnerHolder = (ChatAdapterOwnerHolder) convertView.getTag();
-                }
-
-                chatAdapterOwnerHolder.txtViewMessage.setText(message.getMessage());
-            } else {
-                ChatAdapterHolder chatAdapterHolder;
-                if (convertView == null) {
-                    LayoutInflater inflater = LayoutInflater.from(getContext());
-                    convertView = inflater.inflate(R.layout.adapter_chat, parent, false);
-
-                    chatAdapterHolder = new ChatAdapterHolder();
-                    chatAdapterHolder.txtViewUsername = (TextView) convertView.findViewById(R.id.text_view_username);
-                    chatAdapterHolder.txtViewMessage = (TextView) convertView.findViewById(R.id.text_view_message);
-                    convertView.setTag(chatAdapterHolder);
-                } else {
-                    chatAdapterHolder = (ChatAdapterHolder) convertView.getTag();
-                }
-
-                chatAdapterHolder.txtViewUsername.setText(message.getWroupDevice().getDeviceName());
-                chatAdapterHolder.txtViewMessage.setText(message.getMessage());
-            }
-        }catch (Exception e) {
+        }catch (Exception e){
             e.printStackTrace();
         }
 
