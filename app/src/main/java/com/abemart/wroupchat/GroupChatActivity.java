@@ -2,6 +2,8 @@ package com.abemart.wroupchat;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Messenger;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -10,6 +12,8 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.abemart.wroup.client.WroupClient;
 import com.abemart.wroup.common.WiFiP2PInstance;
@@ -29,7 +33,11 @@ public class GroupChatActivity extends AppCompatActivity implements DataReceived
     public static final String EXTRA_IS_GROUP_OWNER = "isGroupOwnerExtra";
 
     private ListView listViewChat;
-    private ChatAdapter chatAdapter;
+    //private ChatAdapter chatAdapter;
+
+
+    private ChatRAdapter adapter;
+    private ArrayList<MessageWrapper> messageList;
 
     private String groupName;
     private boolean isGroupOwner = false;
@@ -42,7 +50,9 @@ public class GroupChatActivity extends AppCompatActivity implements DataReceived
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_chat);
 
-        chatAdapter = new ChatAdapter(getApplicationContext(), new ArrayList<MessageWrapper>(), WiFiP2PInstance.getInstance(getApplicationContext()).getThisDevice());
+        messageList=new ArrayList<MessageWrapper>();
+
+       // chatAdapter = new ChatAdapter(getApplicationContext(), new ArrayList<MessageWrapper>(), WiFiP2PInstance.getInstance(getApplicationContext()).getThisDevice());
 
         Intent startIntent = getIntent();
         groupName = startIntent.getStringExtra(EXTRA_GROUP_NAME);
@@ -60,11 +70,11 @@ public class GroupChatActivity extends AppCompatActivity implements DataReceived
             wroupClient.setClientConnectedListener(this);
         }
 
-        listViewChat = (ListView) findViewById(R.id.list_view_group_chat);
+      //  listViewChat = (ListView) findViewById(R.id.list_view_group_chat);
         Button btnSend = (Button) findViewById(R.id.button_send_message);
         final EditText editTextMessage = (EditText) findViewById(R.id.edit_text_chat_message);
 
-        listViewChat.setAdapter(chatAdapter);
+        //listViewChat.setAdapter(chatAdapter);
 
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,14 +91,18 @@ public class GroupChatActivity extends AppCompatActivity implements DataReceived
                         wroupClient.sendMessageToAllClients(normalMessage);
                     }
 
-                    chatAdapter.add(normalMessage);
+                    //chatAdapter.add(normalMessage);
+                    messageList.add(normalMessage);
+                    adapter.updateData(messageList);
                     editTextMessage.setText("");
+                    Log.d("TAG", normalMessage.toString());
                 }
             }
         });
 
         setActionBarTitle(groupName);
         setTitle(groupName);
+        setupRecyclerView();
     }
 
     private void setActionBarTitle(String title) {
@@ -102,7 +116,9 @@ public class GroupChatActivity extends AppCompatActivity implements DataReceived
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                chatAdapter.add(messageWrapper);
+               // chatAdapter.add(messageWrapper);
+                messageList.add(messageWrapper);
+                adapter.updateData(messageList);
             }
         });
     }
@@ -127,6 +143,14 @@ public class GroupChatActivity extends AppCompatActivity implements DataReceived
                 wroupClient.disconnect();
             }
         });
+    }
+
+    private void setupRecyclerView(){
+        RecyclerView messagesRV=findViewById(R.id.list_view_group_chat);
+        messagesRV.setLayoutManager(new LinearLayoutManager(this,RecyclerView.VERTICAL,false));
+        adapter=new ChatRAdapter(new ArrayList<MessageWrapper>());
+        messagesRV.setAdapter(adapter);
+
     }
 
     protected void onDestroy() {

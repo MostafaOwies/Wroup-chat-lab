@@ -40,16 +40,32 @@ public class ChatAdapter extends ArrayAdapter<MessageWrapper> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         MessageWrapper message = getItem(position);
 
-        try {
-            ChatAdapterOwnerHolder chatAdapterOwnerHolder;
-            LayoutInflater inflater = LayoutInflater.from(getContext());
-            convertView = inflater.inflate(R.layout.adapter_chat_owner, parent, false);
-            chatAdapterOwnerHolder = new ChatAdapterOwnerHolder();
-            chatAdapterOwnerHolder.txtViewMessage = (TextView) convertView.findViewById(R.id.text_view_message_owner);
-            convertView.setTag(chatAdapterOwnerHolder);
-            chatAdapterOwnerHolder.txtViewMessage.setText(message.getMessage());
 
-        }catch (Exception e){
+        try {
+            if (message.getWroupDevice().equals(currentDevice)) {
+                ChatAdapterOwnerHolder chatAdapterOwnerHolder;
+                    LayoutInflater inflater = LayoutInflater.from(getContext());
+                    convertView = inflater.inflate(R.layout.adapter_chat_owner, parent, false);
+                    chatAdapterOwnerHolder = new ChatAdapterOwnerHolder();
+                    chatAdapterOwnerHolder.txtViewMessage = (TextView) convertView.findViewById(R.id.text_view_message_owner);
+                    convertView.setTag(chatAdapterOwnerHolder);
+                chatAdapterOwnerHolder.txtViewMessage.setText(message.getMessage());
+            } else {
+                ChatAdapterHolder chatAdapterHolder;
+
+                    LayoutInflater inflater = LayoutInflater.from(getContext());
+                    convertView = inflater.inflate(R.layout.adapter_chat, parent, false);
+
+                    chatAdapterHolder = new ChatAdapterHolder();
+                    chatAdapterHolder.txtViewUsername = (TextView) convertView.findViewById(R.id.text_view_username);
+                    //chatAdapterHolder.txtViewMessage = (TextView) convertView.findViewById(R.id.text_view_message);
+                    convertView.setTag(chatAdapterHolder);
+
+
+                chatAdapterHolder.txtViewUsername.setText(message.getWroupDevice().getDeviceName());
+                chatAdapterHolder.txtViewMessage.setText(message.getMessage());
+            }
+        }catch (Exception e) {
             e.printStackTrace();
         }
 

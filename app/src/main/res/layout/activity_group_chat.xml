@@ -6,13 +6,13 @@
               android:orientation="vertical"
               tools:context="com.abemart.wroupchat.MainActivity">
 
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list_view_group_chat"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:divider="@null"
-        tools:listitem="@layout/adapter_chat"/>
+        />
 
 
     <LinearLayout
